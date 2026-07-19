@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CSS Grid Table with Delete Button</title>
+<style>
+  .grid-table {
+    display: grid;
+    border: 1px solid #333;
+    border-collapse: collapse;
+  }
+
+  /* Each row is a grid with N data columns + 1 delete column */
+  .grid-row {
+    display: grid;
+    grid-template-columns: repeat(var(--cols), 1fr) auto; /* auto = delete button column */
+    border-bottom: 1px solid #333;
+    align-items: center;
+  }
+
+  .grid-cell {
+    padding: 8px;
+    border-right: 1px solid #333;
+  }
+  
+  
+  .grid-row:last-child {
+    border-bottom: none;
+  }
+
+  .delete-btn {
+    padding: 5px 10px;
+    background: crimson;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  .delete-btn:hover {
+    background: darkred;
+  }
+</style>
+</head>
+<body>
+
+<h2>CSS Grid Table with Delete Button</h2>
+
+<div id="table" class="grid-table"></div>
+
+<script>
+const table = document.getElementById("table");
+
+// Example data (dynamic columns possible)
+let data = [
+  ["Alice", "Developer", "NY","Extra Column"],
+  ["Bob", "Designer", "LA", "Extra Column"],
+  ["Charlie", "Manager", "TX","Extra Column"]
+];
+
+// Render function
+function renderTable() {
+  table.innerHTML = ""; // Clear table
+  const colCount = data[0]?.length || 0;
+  /*This code controls how many columns are displayed. It will be updated based on the first data row read from data,
+  meaning it assumes all rows have the same number of columns. For our purposes, we can check the last row's length,
+  and pass it to a variable comparison test. An if statement that asks if the new column count is greater than the existing
+  one. If it is, that's the new max column count. Then, in the data cell part, we can have an if statement where if there 
+  isn't enough data, create a cell with string "N/A". The colCount variable test will probably have to be called and tested 
+  everytime we confirm data added in the other screens, so we will need to remember to call it in the other functions when 
+  adding new data */
+                /*element index*/  /*by the forEach syntax*/
+  data.forEach((rowData, rowIndex) => {
+    const row = document.createElement("div");
+    row.className = "grid-row";
+    row.style.setProperty("--cols", colCount); // dynamic column count
+
+    // Add data cells //Making little containers for each cell, appending them to the row, and 
+    // then appending the row to the table. This is where we will need to add the if statement 
+    // for if there isn't enough data to fill all the columns, create a cell with "N/A". 
+    // We can check this by comparing the length of the rowData array with the colCount variable, 
+    // and if it's less, we can create empty cells until we reach colCount, filling them with "N/A".
+    rowData.forEach(cellData => {
+      const cell = document.createElement("div");
+      cell.className = "grid-cell";
+      cell.textContent = cellData;
+      row.appendChild(cell);
+    });
+
+    // Add delete button cell
+    const deleteCell = document.createElement("div");
+    deleteCell.className = "grid-cell";
+    deleteCell.style.borderRight = "none"; // last column no border
+
+    const btn = document.createElement("button");
+    btn.className = "delete-btn";
+    btn.textContent = "Delete";
+    btn.onclick = () => {
+      data.splice(rowIndex, 1); // splice removes data. It will remove exactly one element at the specified index
+      //the specified index is defined by the rowIndex variable, which is provided by the forEach loop. It changes with each call of forEach.
+      renderTable(); //then render the table again to update display
+    };
+
+    deleteCell.appendChild(btn);
+    row.appendChild(deleteCell);
+
+    table.appendChild(row);
+  });
+}
+
+renderTable();
+</script>
+
+</body>
+</html>

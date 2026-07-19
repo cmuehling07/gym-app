@@ -1,0 +1,84 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.screen {
+    display: none;
+    padding: 20px;
+}
+
+.active {
+        display: block;
+        opacity: 1;
+}
+
+#muscleNameButtons {
+    display: flex;
+    flex-direction: column;
+}
+
+.buttonModifiers {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.navButtons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+} 
+
+.grid-table {
+    display: grid;
+    border: 1px solid #333;
+    border-collapse: collapse;
+}
+
+.grid-row {
+    display: grid;
+    grid-template-columns: repeat(var(--cols), 1fr) auto; /* auto = delete button column */
+    border-bottom: 1px solid #333;
+    align-items: center;
+    text-align: center;
+}
+
+.grid-cell {
+    padding: 8px;
+    border-right: 1px solid #333;
+}
+  
+  
+.grid-row:last-child {
+    border-bottom: none;
+    border-right: none;
+}
+
+.delete-btn {
+    padding: 5px 10px;
+    background: crimson;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+  
+.delete-btn:hover {
+    background: darkred;
+}
+
+.form-row-RW {
+    display: flex;          /* Put items in a row */
+    align-items: center;    /* Vertically align inputs with labels */
+}
+
+.form-row-RW label {
+    margin-right: 8px;       /* Small space between label and input */
+    white-space: nowrap;     /* Prevent label from breaking into two lines */
+}
+
+.form-row-RW input {
+    margin-right: 20px;       /* Small space between input and next element */
+    width: 20px;
+}
