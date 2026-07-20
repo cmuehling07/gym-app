@@ -1,16 +1,101 @@
-/* Starting state variables, start */
-const exerciseData = {} //This was created first, so this will have all exercise data, instead of being nested under the exercises in the muscle screen data
-const mAndEScreenData = { //Stands for muscle and exercise screens data. Will have the data for the muscle groups on the muscle screen, and each exercise in each muscle group
-    muscleGroups: []
-}; 
-/* Starting state variables, end */
+/* Starting state code, start*/
+document.addEventListener('DOMContentLoaded', () => {
+    let exerciseData = {} 
+    let mAndEScreenData = { 
+        muscleGroups: []
+    };
+    exerciseDataSave=loadData('exerciseData');
+    mAndEScreenDataSave=loadData('mAndEScreenData');
+    if (Object.keys(exerciseDataSave).length > 0) {
+        exerciseData = exerciseDataSave;
+    }
+    if (mAndEScreenDataSave.muscleGroups.length > 0) {
+        mAndEScreenData = mAndEScreenDataSave;
+    }
 
-/* Main render function, start*/
-//when done with render function, call render here on DOM elements loadup, refer to Chat for memory
+    /* Starting state, home screen, start */
+    document.getElementById('navMusclesButton').addEventListener('click', () => {
+        showScreen('Muscles');
+    })
+    document.getElementById('startWorkoutButton').addEventListener('click', () => {
+        showScreen('startWorkoutScreen');
+    })
+    /* Starting state, home screen, end */
+
+    /* Starting state, muscle screen, start */
+    createButtonB2Home('navButtonMuscles', 'Muscles'); /* creates and appends the back to home button on the muscle screen*/
+    // wrappers for the add button functions, and initial event listener
+    const addModeMusclesListener = () => addMode('Muscles', 'addMuscleGroup', 'Muscle Group Name', completeModeMusclesListener, addModeMusclesListener);
+    const completeModeMusclesListener = () => completeModeMuscles('addMuscleGroup');
+    document.getElementById('addMuscleGroup').addEventListener('click', addModeMusclesListener); /*Starting state of add button in muscle screen*/
+    document.getElementById('Muscles'+'B2Home').addEventListener('click',()=>{
+        if (document.getElementById("addMuscleGroupForm")) {
+            //Assumes existence of Complete button if there is the existence of form; attribute to nature of linked deployment in addMode
+            document.getElementById("addMuscleGroup").removeEventListener('click', completeModeMusclesListener);
+            document.getElementById("addMuscleGroup").textContent='Add';
+            document.getElementById("addMuscleGroupForm").remove();
+            document.getElementById("addMuscleGroup").addEventListener('click', addModeMusclesListener);
+        }
+    })
+    /* Starting state, muscle screen, end */
+
+    /* Starting state, start workout screen, start */
+    createButtonB2Home('navButtonsStartWorkout', 'startWorkoutScreen');
+    document.getElementById('startWorkoutAddExercisesButton').addEventListener('click', ()=>{
+        renderStartWorkoutExerciseListScreen();
+        showScreen('exerciseListScreen')
+    })
+    document.getElementById('startWorkoutCompleteButton').addEventListener('click', () => {
+        const primary=document.getElementById("startWorkoutExercisesContainer")
+        Array.from(primary.children).forEach(exerciseContainer => {
+            const exerciseName=exerciseContainer.dataset.exerciseName
+            const muscleGroupName=exerciseContainer.dataset.muscleGroupName
+            const exerciseDataInput=[]
+            const now=new Date()
+            const year=now.getFullYear()
+            const month=now.getMonth()
+            const day=now.getDate() 
+            const dateString=`${month+1}-${day}-${year}`
+            exerciseDataInput.push(dateString)
+            document.getElementById(exerciseName+"startWorkoutRepsAndWeightInputContainer").querySelectorAll("div").forEach((formContainer) => {
+                let reps=""
+                let weight=""
+                formContainer.querySelectorAll("*").forEach((formElement)=>{
+                    if (formElement.tagName==="INPUT" && formElement.name==="Reps" && formElement.value.trim()!=='') {
+                        reps=formElement.value.trim()
+                    }
+                    if (formElement.tagName==="INPUT" && formElement.name==="Weight" && formElement.value.trim()!=='') {
+                        weight=formElement.value.trim()
+                    }
+                })
+                if (reps!=='' && weight!=='') {
+                    set=reps+"x"+weight
+                    exerciseDataInput.push(set)
+                } else {
+                    exerciseDataInput.push("N/A")
+                }
+            })
+            exerciseData[muscleGroupName][exerciseName+"Data"].push(exerciseDataInput)
+            saveData('exerciseData', exerciseData);
+            renderTable(exerciseData[muscleGroupName][exerciseName+"Data"],exerciseName,exerciseName+"DataTable")
+        })
+        showScreen("home")
+        document.getElementById("startWorkoutExercisesContainer").querySelectorAll('*').forEach(element=>element.remove())
+    })
+    /* Starting state, start workout screen, end */
+
+    /* Starting state, exercise list screen, start */
+    createButtonB2StartWorkout('navButtonsExerciseList', 'exerciseListScreen');
+    /* Starting state, exercise list screen, end */
+
+    render();
+});
+
 function render() { //master render for all stored elements of the app
-
+    renderMuscleGroups();
+    renderStartWorkoutExerciseListScreen();
 }
-/* Main render function, end */
+/* Starting state code, end */
 
 /* Supporting render functions, start */
 function renderMuscleGroups() { // Render the muscle groups
@@ -35,7 +120,7 @@ function renderMuscleGroups() { // Render the muscle groups
                 document.getElementById(muscleGroupName+'MuscleButtonModifiedDelete').remove();
                 document.getElementById(muscleGroupName+'MuscleButtonDeleteWarning').remove();
                 document.getElementById(muscleExerciseContainer.id).remove()
-                // Remove muscle group from data structure, render again (primarily for exercise list to update)
+                // Remove muscle group from data structures, render again (primarily for exercise list to update)
                 mAndEScreenData.muscleGroups.splice(mAndEScreenData.muscleGroups.indexOf(muscleGroupName), 1);
                 delete exerciseData[muscleGroupName];
                 render()                
@@ -133,6 +218,11 @@ function renderMuscleScreen(muscleGroupName) {
 }
 
 function renderExerciseDataScreen(exerciseName, muscleGroupName) {
+    // The actual rendering of the table is tied to the renderTable function
+    // If no data exists for exercise, just the header is rendered by renderTable
+    // If data exists, the full table is rendered by renderTable
+    // In both situations, renderTable is calling the same data location, there just are different amounts of data to render.
+
     // Create the screen
     const exerciseDataScreen = document.createElement('div');
     exerciseDataScreen.id = exerciseName + 'ExerciseDataScreen';
@@ -221,86 +311,9 @@ function renderStartWorkoutExerciseListScreen() {
         });
     });
 }
-
 /* Supporting render functions, end */
 
-/* Starting state, home screen, start */
-document.getElementById('navMusclesButton').addEventListener('click', () => {
-    showScreen('Muscles');
-})
-document.getElementById('startWorkoutButton').addEventListener('click', () => {
-    showScreen('startWorkoutScreen');
-})
-/* Starting state, home screen, end */
-
-/* Starting state, muscle screen, start */
-createButtonB2Home('navButtonMuscles', 'Muscles'); /* creates and appends the back to home button on the muscle screen*/
-
-// wrappers for the add button functions, and initial event listener
-const addModeMusclesListener = () => addMode('Muscles', 'addMuscleGroup', 'Muscle Group Name', completeModeMusclesListener, addModeMusclesListener);
-const completeModeMusclesListener = () => completeModeMuscles('addMuscleGroup');
-document.getElementById('addMuscleGroup').addEventListener('click', addModeMusclesListener); /*Starting state of add button in muscle screen*/
-
-document.getElementById('Muscles'+'B2Home').addEventListener('click',()=>{
-    if (document.getElementById("addMuscleGroupForm")) {
-        //Assumes existence of Complete button if there is the existence of form; attribute to nature of linked deployment in addMode
-        document.getElementById("addMuscleGroup").removeEventListener('click', completeModeMusclesListener);
-        document.getElementById("addMuscleGroup").textContent='Add';
-        document.getElementById("addMuscleGroupForm").remove();
-        document.getElementById("addMuscleGroup").addEventListener('click', addModeMusclesListener);
-    }
-})
-
-/* Starting state, muscle screen, end */
-
-/* Starting state, start workout screen, start */
-createButtonB2Home('navButtonsStartWorkout', 'startWorkoutScreen');
-document.getElementById('startWorkoutAddExercisesButton').addEventListener('click', ()=>addModeStartWorkoutAddExercisesButton())
-document.getElementById('startWorkoutCompleteButton').addEventListener('click', () => {
-    const primary=document.getElementById("startWorkoutExercisesContainer")
-    Array.from(primary.children).forEach(exerciseContainer => {
-        const exerciseName=exerciseContainer.dataset.exerciseName
-        const muscleGroupName=exerciseContainer.dataset.muscleGroupName
-        const exerciseDataInput=[]
-        const now=new Date()
-        const year=now.getFullYear()
-        const month=now.getMonth()
-        const day=now.getDate() 
-        const dateString=`${month+1}-${day}-${year}`
-        exerciseDataInput.push(dateString)
-        document.getElementById(exerciseName+"startWorkoutRepsAndWeightInputContainer").querySelectorAll("div").forEach((formContainer) => {
-            let reps=""
-            let weight=""
-            formContainer.querySelectorAll("*").forEach((formElement)=>{
-                if (formElement.tagName==="INPUT" && formElement.name==="Reps" && formElement.value.trim()!=='') {
-                    reps=formElement.value.trim()
-                }
-                if (formElement.tagName==="INPUT" && formElement.name==="Weight" && formElement.value.trim()!=='') {
-                    weight=formElement.value.trim()
-                }
-            })
-            if (reps!=='' && weight!=='') {
-                set=reps+"x"+weight
-                exerciseDataInput.push(set)
-            } else {
-                exerciseDataInput.push("N/A")
-            }
-        })
-        exerciseData[muscleGroupName][exerciseName+"Data"].push(exerciseDataInput)
-        renderTable(exerciseData[muscleGroupName][exerciseName+"Data"],exerciseName,exerciseName+"DataTable")
-    })
-    showScreen("home")
-    document.getElementById("startWorkoutExercisesContainer").querySelectorAll('*').forEach(element=>element.remove())
-}
-)
-/* Starting state, start workout screen, end */
-
-/* Starting state, exercise list screen, start */
-createButtonB2StartWorkout('navButtonsExerciseList', 'exerciseListScreen');
-/* Starting state, exercise list screen, end */
-
 /* General functions start */
-
 function showScreen(screenId) {
     const screens=document.querySelectorAll('.screen');
 
@@ -348,7 +361,6 @@ function loadData(objectKeyName) {
 /* General functions end */
 
 /* Button functions start */
-
 function createButton(name, text) { /*Name and text should be written as strings*/
     const button=document.createElement('button');
     button.id=name;
@@ -396,11 +408,9 @@ function createButtonB2StartWorkout(parentContainerName, pageName) { /*Name and 
         showScreen('startWorkoutScreen');
     })
 }
-
 /*Button functions end*/
 
 /*Create screen functions start*/
-
 function createMuscleScreen(muscleGroupName) { /*Name should be written as string*/
     const muscleScreen=document.createElement('div');
     muscleScreen.id=muscleGroupName+'Screen';
@@ -441,27 +451,6 @@ function createMuscleScreen(muscleGroupName) { /*Name should be written as strin
             }
         })
 } 
-
-function createExerciseDataScreen(exerciseName, muscleGroupName) { /*Name should be written as string*/
-    const exerciseDataScreen = document.createElement('div');
-    exerciseDataScreen.id = exerciseName + 'ExerciseDataScreen';
-    exerciseDataScreen.classList.add('screen');
-    exerciseDataScreen.innerHTML =
-        `<h1>${exerciseName}</h1>`;
-    document.body.appendChild(exerciseDataScreen);
-    const table = document.createElement('div');
-    table.id = exerciseName + 'DataTable';
-    table.classList.add('grid-table');
-    exerciseDataScreen.appendChild(table); 
-    const exerciseDataKeyName=`"${exerciseName}"` //makes the exerciseName key since can't define it in the dot function
-    exerciseData.exerciseDataKeyName=[] //makes the array that we will add rows to, linked to exerciseName key we just made
-    renderTable(exerciseData.exerciseDataKeyName, exerciseName, exerciseName+'DataTable') /*renders the table based on the empty array we just made, will just show column titles at first*/
-    createButtonB2Exercises(exerciseDataScreen.id, exerciseDataScreen.id, muscleGroupName) /* creates and appends the back to exercises button*/
-    document.getElementById(exerciseName+"ExerciseDataScreen").appendChild(createButton(exerciseName+'ExerciseDataScreenB2StartWorkout','Back to Build Workout'))
-    document.getElementById(exerciseName+'ExerciseDataScreenB2StartWorkout').addEventListener('click',()=>{
-        showScreen('startWorkoutScreen')
-    })
-}
 
 function renderTable(dataArray, exerciseName, tableName) { //data array should be of the form exerciseData.exerciseName to access array
     document.getElementById(exerciseName+'DataTable').innerHTML=""
@@ -546,11 +535,9 @@ function colCountCounter(dataArray) {
     })
     return counter
 }
-
 /*Create screen functions end*/
 
 /*Add button functions start*/
-
 function addMode(parentContainerName,addButtonName,formText,completeListener,addListener) { /*When add button is clicked, trigger something, and convert button to complete mode*/
     document.getElementById(addButtonName).textContent='Complete';
     document.getElementById(parentContainerName).insertBefore(createForm(addButtonName+'Form',addButtonName+'Name',formText), 
@@ -566,7 +553,9 @@ function completeModeMuscles(addButtonName) { /*Click complete button => back to
         // Create muscle group object for mAndE and for exerciseData
         const muscleGroupObject={name: muscleGroupName, exercises: []}
         mAndEScreenData.muscleGroups[muscleGroupName]=muscleGroupObject;
+        saveData('mAndEScreenData',mAndEScreenData);
         exerciseData[muscleGroupName]={}
+        saveData('exerciseData', exerciseData);
         // Create container for muscle group on start workout exercise list
         const muscleExerciseContainer = document.createElement("div")
         muscleExerciseContainer.id=muscleGroupName+'ExerciseListExercisesContainer'
@@ -621,6 +610,7 @@ function completeModeExercises(muscleGroupName) { /*Click complete button => bac
     if(exerciseName.trim() !== '' && !document.getElementById(exerciseName+'ExerciseButton')) { /*If input is not empty, exercise doesn't already exist, create*/
         // Pushes exercise to the exercise section of the muscle group, only creates a list of names in the array, no associated object to store data in
         mAndEScreenData[muscleGroupName].exercises.push(exerciseName);
+        saveData('mAndEScreenData', mAndEScreenData);
         // Creates (using render function) the exercise data screen, for NEW EXERCISES
         if (!document.getElementById(`${exerciseName}ExerciseDataScreen`)) {
             renderExerciseDataScreen(exerciseName, muscleGroupName);
@@ -670,6 +660,7 @@ function completeModeExercises(muscleGroupName) { /*Click complete button => bac
         exerciseListSingularExerciseContainer.dataset.muscleGroupName=muscleGroupName
         // Adds the appropriately named data array to the exercise data object
         exerciseData[muscleGroupName][exerciseName+"Data"]=[]
+        saveData('exerciseData', exerciseData);
     }
     // Handles the return of the "add exercise" button to its add mode, removes form
     document.getElementById(muscleGroupName+'AddExercise').removeEventListener('click',()=>completeModeExercises(muscleGroupName));
@@ -679,45 +670,5 @@ function completeModeExercises(muscleGroupName) { /*Click complete button => bac
         ()=>completeModeExercises(muscleGroupName), 
         ()=>addMode(muscleGroupName+'Screen', muscleGroupName+'AddExercise', 'Exercise Name',)));
 }
-
-function addModeStartWorkoutAddExercisesButton() { //takes existing EXERCISE LIST buttons and puts them on the start workout screen; actually populating the exercise list is done elsewhere
-    showScreen('exerciseListScreen');
-    document.getElementById('exerciseListButtonsContainer').querySelectorAll('button').forEach(exerciseListButton => {
-        exerciseListButton.addEventListener('click', () => {
-            const exerciseName=exerciseListButton.dataset.exercise;
-            const muscleGroupName=document.getElementById(exerciseName+'ExerciseListSingularExerciseContainer').dataset.muscleGroupName
-            if (!document.getElementById(exerciseName+'startWorkoutSingularExerciseContainer')) {
-                const startWorkoutSingularExerciseContainer=document.createElement('div');
-                startWorkoutSingularExerciseContainer.id=exerciseName+'startWorkoutSingularExerciseContainer';
-                startWorkoutSingularExerciseContainer.dataset.exerciseName=exerciseName
-                startWorkoutSingularExerciseContainer.dataset.muscleGroupName=muscleGroupName
-                document.getElementById('startWorkoutExercisesContainer').appendChild(startWorkoutSingularExerciseContainer);
-                createButtonDelete(exerciseName+'startWorkoutSingularExerciseContainer', exerciseName+'startWorkoutExerciseButtonModifiedDelete', exerciseName+'startWorkoutExerciseButton', exerciseName);
-                document.getElementById(exerciseName+'startWorkoutExerciseButtonModifiedDelete').appendChild(createButton(exerciseName+'startWorkoutExerciseButtonStats','Stats'))
-                document.getElementById(exerciseName+'startWorkoutExerciseButtonStats').addEventListener('click', () =>{
-                    showScreen(exerciseName+'ExerciseDataScreen')
-                })
-                document.getElementById(exerciseName+"startWorkoutExerciseButtonDelete").addEventListener('click', () => {
-                    document.getElementById(exerciseName+"startWorkoutSingularExerciseContainer").remove()
-                })
-                const repsAndWeightInputContainer=document.createElement('div');
-                repsAndWeightInputContainer.id=exerciseName+'startWorkoutRepsAndWeightInputContainer';
-                startWorkoutSingularExerciseContainer.appendChild(repsAndWeightInputContainer);
-                repsAndWeightInputContainer.appendChild(createRepsAndWeightInput());
-                const addSetButtonContainer=document.createElement('div');
-                startWorkoutSingularExerciseContainer.appendChild(addSetButtonContainer);
-                const addSetButton=document.createElement('button');
-                addSetButton.textContent='Add Set';
-                addSetButtonContainer.appendChild(addSetButton)
-                addSetButton.addEventListener('click', () => {
-                    repsAndWeightInputContainer.appendChild(createRepsAndWeightInput());
-                });
-
-            }
-            showScreen('startWorkoutScreen');
-        })
-    })
-}
-
 /*Add button functions end*/
 
