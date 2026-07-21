@@ -1,17 +1,24 @@
 /* Starting state code, start*/
+let exerciseData = {} 
+let mAndEScreenData = { 
+    muscleGroups: {}
+};
+// Wrappers that must be global state
+const addModeMusclesListener = () => addMode('Muscles', 'addMuscleGroup', 'Muscle Group Name', completeModeMusclesListener, addModeMusclesListener);
+const completeModeMusclesListener = () => completeModeMuscles('addMuscleGroup');
+
 document.addEventListener('DOMContentLoaded', () => {
-    let exerciseData = {} 
-    let mAndEScreenData = { 
-        muscleGroups: []
-    };
+
     exerciseDataSave=loadData('exerciseData');
     mAndEScreenDataSave=loadData('mAndEScreenData');
-    if (Object.keys(exerciseDataSave).length > 0) {
+    if (Object.keys(exerciseDataSave ?? {}).length > 0) {
         exerciseData = exerciseDataSave;
     }
-    if (mAndEScreenDataSave.muscleGroups.length > 0) {
+    if (Object.keys(mAndEScreenDataSave?.muscleGroups ?? {}).length > 0) {
         mAndEScreenData = mAndEScreenDataSave;
     }
+    console.log(exerciseDataSave);
+    console.log(mAndEScreenDataSave);
 
     /* Starting state, home screen, start */
     document.getElementById('navMusclesButton').addEventListener('click', () => {
@@ -25,8 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
     /* Starting state, muscle screen, start */
     createButtonB2Home('navButtonMuscles', 'Muscles'); /* creates and appends the back to home button on the muscle screen*/
     // wrappers for the add button functions, and initial event listener
-    const addModeMusclesListener = () => addMode('Muscles', 'addMuscleGroup', 'Muscle Group Name', completeModeMusclesListener, addModeMusclesListener);
-    const completeModeMusclesListener = () => completeModeMuscles('addMuscleGroup');
     document.getElementById('addMuscleGroup').addEventListener('click', addModeMusclesListener); /*Starting state of add button in muscle screen*/
     document.getElementById('Muscles'+'B2Home').addEventListener('click',()=>{
         if (document.getElementById("addMuscleGroupForm")) {
@@ -42,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
     /* Starting state, start workout screen, start */
     createButtonB2Home('navButtonsStartWorkout', 'startWorkoutScreen');
     document.getElementById('startWorkoutAddExercisesButton').addEventListener('click', ()=>{
-        renderStartWorkoutExerciseListScreen();
         showScreen('exerciseListScreen')
     })
     document.getElementById('startWorkoutCompleteButton').addEventListener('click', () => {
@@ -99,8 +103,8 @@ function render() { //master render for all stored elements of the app
 
 /* Supporting render functions, start */
 function renderMuscleGroups() { // Render the muscle groups
-    mAndEScreenData.muscleGroups.forEach(muscleGroup => { //Create and append each muscle group w/ associated features
-        const muscleGroupName = muscleGroup.name;
+    Object.keys(mAndEScreenData.muscleGroups).forEach(muscleGroupSingular => { //Create and append each muscle group w/ associated features
+        const muscleGroupName = mAndEScreenData.muscleGroups[muscleGroupSingular].name;
         // Create the button for each muscle group on the muscle group screen
         createButtonDelete('muscleNameButtons', muscleGroupName+'MuscleButtonModifiedDelete', muscleGroupName+'MuscleButton', muscleGroupName.trim());
         // Code for action of delete button, including warning text
@@ -121,9 +125,12 @@ function renderMuscleGroups() { // Render the muscle groups
                 document.getElementById(muscleGroupName+'MuscleButtonDeleteWarning').remove();
                 document.getElementById(muscleExerciseContainer.id).remove()
                 // Remove muscle group from data structures, render again (primarily for exercise list to update)
-                mAndEScreenData.muscleGroups.splice(mAndEScreenData.muscleGroups.indexOf(muscleGroupName), 1);
+                delete mAndEScreenData.muscleGroups[muscleGroupName];
+                saveData('mAndEScreenData', mAndEScreenData);
                 delete exerciseData[muscleGroupName];
-                render()                
+                saveData('exerciseData', exerciseData);
+                wipeExerciseList();
+                renderStartWorkoutExerciseListScreen();              
             });
             document.getElementById(muscleGroupName+'MuscleButtonCancelDelete').addEventListener('click', () => { /* if cancel is clicked*/
                 document.getElementById(muscleGroupName+'MuscleButtonDeleteWarning').remove();
@@ -150,9 +157,11 @@ function renderMuscleScreen(muscleGroupName) {
     exerciseButtons.classList.add('exerciseButtons');
     document.getElementById(muscleScreen.id).appendChild(exerciseButtons);
     // Create the add exercise button, associated functions will physically add new button, and update data for future, to be rendered later
-    document.getElementById(muscleScreen.id).appendChild(createButton(muscleGroupName+'AddExercise', 'Add Exercise'));
-    const completeModeExercisesListener = () => completeModeExercises(muscleGroupName);
-    const addModeExercisesListener = () => addMode(muscleGroupName+'Screen', muscleGroupName+'AddExercise', 'Exercise Name', completeModeExercisesListener, addModeExercisesListener);
+    const AddCompleteButtonContainer = document.createElement('div');
+    AddCompleteButtonContainer.id = muscleGroupName+'AddCompleteButtonContainer';
+    document.getElementById(muscleScreen.id).appendChild(AddCompleteButtonContainer);
+    document.getElementById(muscleGroupName+'AddCompleteButtonContainer').appendChild(createButton(muscleGroupName+'AddExercise', 'Add Exercise'));
+    document.getElementById(muscleGroupName+'AddExercise').addEventListener('click', () => addModeExercises(muscleGroupName));
     // Create the nav button container
      const navButtons = document.createElement('div')
     document.getElementById(muscleScreen.id).appendChild(navButtons);
@@ -163,10 +172,10 @@ function renderMuscleScreen(muscleGroupName) {
         document.getElementById(muscleGroupName+'B2Muscles').addEventListener('click',()=>{
             if (document.getElementById(muscleGroupName+"AddExerciseForm")) {
             //Assumes existence of Complete button if there is the existence of form; attribute to nature of linked deployment in addMode
-            document.getElementById(muscleGroupName+"AddExercise").removeEventListener('click', completeModeExercisesListener);
-            document.getElementById(muscleGroupName+"AddExercise").textContent='Add';
-            document.getElementById(muscleGroupName+"AddExerciseForm").remove();
-            document.getElementById(muscleGroupName+"AddExercise").addEventListener('click', addModeExercisesListener);
+                document.getElementById(muscleGroupName+'CompleteExercise').remove()
+                document.getElementById(muscleGroupName+'AddExerciseForm').remove();
+                document.getElementById(muscleGroupName+'AddCompleteButtonContainer').appendChild(createButton(muscleGroupName+'AddExercise', 'Add Exercise'));
+                document.getElementById(muscleGroupName+'AddExercise').addEventListener('click', () => addModeExercises(muscleGroupName));
             }
         })
     // Create the back to home button, code for deleting an active form if clicked
@@ -174,16 +183,16 @@ function renderMuscleScreen(muscleGroupName) {
         document.getElementById(muscleGroupName+'B2Home').addEventListener('click',()=>{
         if (document.getElementById(muscleGroupName+"AddExerciseForm")) {
             //Assumes existence of Complete button if there is the existence of form; attribute to nature of linked deployment in addMode
-            document.getElementById(muscleGroupName+"AddExercise").removeEventListener('click', completeModeExercisesListener);
-            document.getElementById(muscleGroupName+"AddExercise").textContent='Add';
-            document.getElementById(muscleGroupName+"AddExerciseForm").remove();
-            document.getElementById(muscleGroupName+"AddExercise").addEventListener('click', addModeExercisesListener);
+                document.getElementById(muscleGroupName+'CompleteExercise').remove()
+                document.getElementById(muscleGroupName+'AddExerciseForm').remove();
+                document.getElementById(muscleGroupName+'AddCompleteButtonContainer').appendChild(createButton(muscleGroupName+'AddExercise', 'Add Exercise'));
+                document.getElementById(muscleGroupName+'AddExercise').addEventListener('click', () => addModeExercises(muscleGroupName));
             }
         })
     // Render exercise buttons from existing data, EXISTING BUTTONS
-    mAndEScreenData[muscleGroupName].exercises.forEach(exercise => {
+    mAndEScreenData.muscleGroups[muscleGroupName].exercises.forEach(exerciseName => {
         // Creates each exercise button, including delete button
-        createButtonDelete(muscleGroupName+'ExerciseButtons', exerciseName+'ExerciseButtonModifiedDelete', exerciseName+'ExerciseButton', exerciseName.trim());
+        createButtonDelete(muscleGroupName+'ExerciseButtons', exerciseName+'ExerciseButtonModifiedDelete', exerciseName+'ExerciseButton', exerciseName);
         // Codes for delete button in each exercise button/delete set
         document.getElementById(exerciseName+'ExerciseButtonDelete').addEventListener('click', () => {
             const warningText=document.createElement('p'); /* creates text for warning */
@@ -200,19 +209,24 @@ function renderMuscleScreen(muscleGroupName) {
             document.getElementById(exerciseName+'ExerciseButtonConfirmDelete').addEventListener('click', () => { /*if confirm is clicked*/
                 document.getElementById(exerciseName+'ExerciseButtonModifiedDelete').remove();
                 document.getElementById(exerciseName+'ExerciseButtonDeleteWarning').remove();
-                /* Insert code here to delete exercise data screen and any attached information in the future, use data-exercise=${exerciseName} to track containers */
+                mAndEScreenData.muscleGroups[muscleGroupName].exercises.splice(mAndEScreenData.muscleGroups[muscleGroupName].exercises.indexOf(exerciseName), 1);
+                saveData('mAndEScreenData', mAndEScreenData);
+                delete exerciseData[muscleGroupName][exerciseName+"Data"];
+                saveData('exerciseData', exerciseData);
+                wipeExerciseList();
+                renderStartWorkoutExerciseListScreen();
             });
             document.getElementById(exerciseName+'ExerciseButtonCancelDelete').addEventListener('click', () => { /* if cancel is clicked*/
                 document.getElementById(exerciseName+'ExerciseButtonDeleteWarning').remove();
             });
             // Render the data screen associated with each exercise, for EXISTING SCREENS in data
-            if (!document.getElementById(`${exerciseName}ExerciseDataScreen`)) { // Should never have an existing screen when called on page open
-                renderExerciseDataScreen(exerciseName, muscleGroupName);
-            }
-            // Show data screen for each exercise if button for exercise is clicked
-            document.getElementById(exerciseName+'ExerciseButton').addEventListener('click', () => {
-                showScreen(exerciseName+'ExerciseDataScreen');
-            });
+        });
+        if (!document.getElementById(`${exerciseName}ExerciseDataScreen`)) { // Should never have an existing screen when called on page open
+            renderExerciseDataScreen(exerciseName, muscleGroupName);
+        }
+        // Show data screen for each exercise if button for exercise is clicked
+        document.getElementById(exerciseName+'ExerciseButton').addEventListener('click', () => {
+            showScreen(exerciseName+'ExerciseDataScreen');
         }); 
     });
 }
@@ -247,8 +261,8 @@ function renderExerciseDataScreen(exerciseName, muscleGroupName) {
 }
 
 function renderStartWorkoutExerciseListScreen() {
-    mAndEScreenData.muscleGroups.forEach(muscleGroupSingular => { // For each muscle group in the data
-        muscleGroupName=muscleGroupSingular.name
+    Object.keys(mAndEScreenData.muscleGroups).forEach(muscleGroupSingular => { // For each muscle group in the data
+        muscleGroupName=mAndEScreenData.muscleGroups[muscleGroupSingular].name
         // Create the container for the exercises in this muscle group
         const muscleExerciseContainer = document.createElement("div")
         muscleExerciseContainer.id=muscleGroupName+'ExerciseListExercisesContainer'
@@ -256,7 +270,7 @@ function renderStartWorkoutExerciseListScreen() {
         document.getElementById('exerciseListButtonsContainer').appendChild(muscleExerciseContainer)
         // For each exercise listed under the muscle group, add the exercise buttons to the muscle container
         mAndEScreenData.muscleGroups[muscleGroupName].exercises.forEach(exercise => {
-            exerciseName=exercise;
+            const exerciseName=exercise;
             // Creates the container and appends to appropriate muscle container
             const exerciseListSingularExerciseContainer = document.createElement("div")
             exerciseListSingularExerciseContainer.id=exerciseName+'ExerciseListSingularExerciseContainer';
@@ -268,7 +282,7 @@ function renderStartWorkoutExerciseListScreen() {
             button.dataset.exercise=exerciseName;
             // Hard-bakes the muscle group name into the CONTAINER so it can be programmatically pulled later
             exerciseListSingularExerciseContainer.dataset.muscleGroupName=muscleGroupName
-            // From here on, this is controlling how the exericse is added to the workout; similar to addModeStartWorkoutAddExercisesButton function
+            // From here on, this is controlling how the exercise is added to the workout
             document.getElementById(exerciseName+'ExerciseListExerciseButton').addEventListener('click', () => {
                 // Create and append container that will go on the BUILD WORKOUT screen
                 const startWorkoutSingularExerciseContainer=document.createElement('div');
@@ -304,10 +318,10 @@ function renderStartWorkoutExerciseListScreen() {
                 // When "add set" button is clicked, a new input field is appended to the container
                 addSetButton.addEventListener('click', () => {
                     repsAndWeightInputContainer.appendChild(createRepsAndWeightInput());
-                });                                
+                });
+                // When exercise list button is pressed, you should go the build workout screen
+                showScreen('startWorkoutScreen');                                
             });
-            // When exercise list button is pressed, you should go the build workout screen
-            showScreen('startWorkoutScreen');
         });
     });
 }
@@ -352,11 +366,15 @@ function createRepsAndWeightInput() {
 function saveData(objectKeyName, objectData) {
     /* Save data to local storage */
     localStorage.setItem(objectKeyName, JSON.stringify(objectData));
+    console.log(localStorage.getItem(objectKeyName));
 }
 function loadData(objectKeyName) {
     /* Load data from local storage */
     const data = localStorage.getItem(objectKeyName);
     return data ? JSON.parse(data) : null;
+}
+function wipeExerciseList() {
+    document.getElementById('exerciseListButtonsContainer').innerHTML = '';
 }
 /* General functions end */
 
@@ -422,10 +440,11 @@ function createMuscleScreen(muscleGroupName) { /*Name should be written as strin
     exerciseButtons.id=muscleGroupName+'ExerciseButtons';
     exerciseButtons.classList.add('exerciseButtons');
     document.getElementById(muscleScreen.id).appendChild(exerciseButtons);
-    document.getElementById(muscleScreen.id).appendChild(createButton(muscleGroupName+'AddExercise', 'Add Exercise')); /* creates and appends add exercise button */
-    const completeModeExercisesListener = () => completeModeExercises(muscleGroupName);
-    const addModeExercisesListener = () => addMode(muscleGroupName+'Screen', muscleGroupName+'AddExercise', 'Exercise Name', completeModeExercisesListener, addModeExercisesListener);
-    document.getElementById(muscleGroupName+'AddExercise').addEventListener('click', addModeExercisesListener)
+    const AddCompleteButtonContainer = document.createElement('div');
+    AddCompleteButtonContainer.id = muscleGroupName+'AddCompleteButtonContainer';
+    document.getElementById(muscleScreen.id).appendChild(AddCompleteButtonContainer);
+    document.getElementById(muscleGroupName+'AddCompleteButtonContainer').appendChild(createButton(muscleGroupName+'AddExercise', 'Add Exercise')); /* creates and appends add exercise button */
+    document.getElementById(muscleGroupName+'AddExercise').addEventListener('click', () => addModeExercises(muscleGroupName));
     const navButtons = document.createElement('div')
     document.getElementById(muscleScreen.id).appendChild(navButtons);
     navButtons.id=muscleGroupName+'NavButtons';
@@ -434,20 +453,20 @@ function createMuscleScreen(muscleGroupName) { /*Name should be written as strin
         document.getElementById(muscleGroupName+'B2Muscles').addEventListener('click',()=>{
         if (document.getElementById(muscleGroupName+"AddExerciseForm")) {
             //Assumes existence of Complete button if there is the existence of form; attribute to nature of linked deployment in addMode
-            document.getElementById(muscleGroupName+"AddExercise").removeEventListener('click', completeModeExercisesListener);
-            document.getElementById(muscleGroupName+"AddExercise").textContent='Add';
-            document.getElementById(muscleGroupName+"AddExerciseForm").remove();
-            document.getElementById(muscleGroupName+"AddExercise").addEventListener('click', addModeExercisesListener);
+            document.getElementById(muscleGroupName+'CompleteExercise').remove()
+            document.getElementById(muscleGroupName+'AddExerciseForm').remove();
+            document.getElementById(muscleGroupName+'AddCompleteButtonContainer').appendChild(createButton(muscleGroupName+'AddExercise', 'Add Exercise'));
+            document.getElementById(muscleGroupName+'AddExercise').addEventListener('click', () => addModeExercises(muscleGroupName));
             }
         })
     createButtonB2Home(muscleGroupName + 'NavButtons', muscleGroupName); /* creates and appends the back to home button*/
         document.getElementById(muscleGroupName+'B2Home').addEventListener('click',()=>{
         if (document.getElementById(muscleGroupName+"AddExerciseForm")) {
             //Assumes existence of Complete button if there is the existence of form; attribute to nature of linked deployment in addMode
-            document.getElementById(muscleGroupName+"AddExercise").removeEventListener('click', completeModeExercisesListener);
-            document.getElementById(muscleGroupName+"AddExercise").textContent='Add';
-            document.getElementById(muscleGroupName+"AddExerciseForm").remove();
-            document.getElementById(muscleGroupName+"AddExercise").addEventListener('click', addModeExercisesListener);
+            document.getElementById(muscleGroupName+'CompleteExercise').remove()
+            document.getElementById(muscleGroupName+'AddExerciseForm').remove();
+            document.getElementById(muscleGroupName+'AddCompleteButtonContainer').appendChild(createButton(muscleGroupName+'AddExercise', 'Add Exercise'));
+            document.getElementById(muscleGroupName+'AddExercise').addEventListener('click', () => addModeExercises(muscleGroupName));
             }
         })
 } 
@@ -517,6 +536,7 @@ function renderTable(dataArray, exerciseName, tableName) { //data array should b
         btn.textContent="Delete";
         btn.onclick=()=>{
         dataArray.splice(rowIndex,1);
+        saveData('exerciseData', exerciseData);
         renderTable(dataArray, exerciseName, tableName);
         }
         
@@ -543,16 +563,16 @@ function addMode(parentContainerName,addButtonName,formText,completeListener,add
     document.getElementById(parentContainerName).insertBefore(createForm(addButtonName+'Form',addButtonName+'Name',formText), 
         document.getElementById(addButtonName)); 
     document.getElementById(addButtonName).removeEventListener('click', addListener);
-    document.getElementById(addButtonName).addEventListener('click', completeListener); 
+    document.getElementById(addButtonName).addEventListener('click', completeListener);
 }
 
 function completeModeMuscles(addButtonName) { /*Click complete button => back to add mode, create muscle group button, create delete button*/
     // Pull muscle group name from form
-    const muscleGroupName=document.getElementById(addButtonName+'Name').value;
-    if(muscleGroupName.trim() !== '' && !document.getElementById(muscleGroupName+'MuscleButton')) { /*If input is not empty, muscle doesn't already exist, create*/
+    const muscleGroupName=document.getElementById(addButtonName+'Name')?.value;
+    if(muscleGroupName?.trim() !== '' && !document.getElementById(muscleGroupName+'MuscleButton')) { /*If input is not empty, muscle doesn't already exist, create*/
         // Create muscle group object for mAndE and for exerciseData
         const muscleGroupObject={name: muscleGroupName, exercises: []}
-        mAndEScreenData.muscleGroups[muscleGroupName]=muscleGroupObject;
+        mAndEScreenData.muscleGroups[muscleGroupName] = muscleGroupObject;
         saveData('mAndEScreenData',mAndEScreenData);
         exerciseData[muscleGroupName]={}
         saveData('exerciseData', exerciseData);
@@ -560,7 +580,7 @@ function completeModeMuscles(addButtonName) { /*Click complete button => back to
         const muscleExerciseContainer = document.createElement("div")
         muscleExerciseContainer.id=muscleGroupName+'ExerciseListExercisesContainer'
         muscleExerciseContainer.innerHTML=`<h3>${muscleGroupName} Exercises</h3>`
-        document.getElementById('exerciseListButtonsContainer').appendChild(muscleExerciseContainer)     
+        document.getElementById('exerciseListButtonsContainer').appendChild(muscleExerciseContainer)
         // Create the button for the muscle group, including delete button
         createButtonDelete('muscleNameButtons', muscleGroupName+'MuscleButtonModifiedDelete', muscleGroupName+'MuscleButton', muscleGroupName.trim());
         // Codes for the delete button
@@ -580,9 +600,12 @@ function completeModeMuscles(addButtonName) { /*Click complete button => back to
                 document.getElementById(muscleGroupName+'MuscleButtonModifiedDelete').remove();
                 document.getElementById(muscleGroupName+'MuscleButtonDeleteWarning').remove();
                 document.getElementById(muscleExerciseContainer.id).remove()
-                mAndEScreenData.muscleGroups.splice(mAndEScreenData.muscleGroups.indexOf(muscleGroupName), 1);
-                delete exerciseData[muscleGroupName]
-                render()                
+                delete mAndEScreenData.muscleGroups[muscleGroupName];
+                saveData('mAndEScreenData', mAndEScreenData);
+                delete exerciseData[muscleGroupName];
+                saveData('exerciseData', exerciseData);
+                wipeExerciseList();
+                renderStartWorkoutExerciseListScreen();
             });
             document.getElementById(muscleGroupName+'MuscleButtonCancelDelete').addEventListener('click', () => { /* if cancel is clicked*/
                 document.getElementById(muscleGroupName+'MuscleButtonDeleteWarning').remove();
@@ -598,7 +621,7 @@ function completeModeMuscles(addButtonName) { /*Click complete button => back to
         });
         
     }
-    // Changes the complete button back to its add button   
+    // Changes the complete button back to its add button
     document.getElementById(addButtonName).removeEventListener('click', completeModeMusclesListener);
     document.getElementById(addButtonName).textContent='Add';
     document.getElementById(addButtonName+'Form').remove();
@@ -606,20 +629,18 @@ function completeModeMuscles(addButtonName) { /*Click complete button => back to
 }
 
 function completeModeExercises(muscleGroupName) { /*Click complete button => back to add mode, create exercise button, create delete button*/
-    const exerciseName=document.getElementById(muscleGroupName+'AddExercise'+'Name').value;
+    const exerciseName=document.getElementById(muscleGroupName+'AddExerciseName').value;
     if(exerciseName.trim() !== '' && !document.getElementById(exerciseName+'ExerciseButton')) { /*If input is not empty, exercise doesn't already exist, create*/
         // Pushes exercise to the exercise section of the muscle group, only creates a list of names in the array, no associated object to store data in
-        mAndEScreenData[muscleGroupName].exercises.push(exerciseName);
+        mAndEScreenData.muscleGroups[muscleGroupName].exercises.push(exerciseName);
         saveData('mAndEScreenData', mAndEScreenData);
+        exerciseData[muscleGroupName][exerciseName+"Data"]=[]
+        saveData('exerciseData', exerciseData);
         // Creates (using render function) the exercise data screen, for NEW EXERCISES
         if (!document.getElementById(`${exerciseName}ExerciseDataScreen`)) {
             renderExerciseDataScreen(exerciseName, muscleGroupName);
             // Renders immediately instead of sending to data and rendering all again
         }
-        // Show the exercise data screen if exercise button is pressed
-        document.getElementById(exerciseName+'ExerciseButton').addEventListener('click', () => {
-            showScreen(exerciseName+'ExerciseDataScreen');
-        });
         // Adds exercise button to the muscle group. Does this for NEW EXERCISES once, if page is
         // reloaded, the buttons are recreated in latter function of renderMuscleScreen which handles existing buttons
         createButtonDelete(muscleGroupName+'ExerciseButtons', exerciseName+'ExerciseButtonModifiedDelete', exerciseName+'ExerciseButton', exerciseName.trim());
@@ -639,12 +660,21 @@ function completeModeExercises(muscleGroupName) { /*Click complete button => bac
             document.getElementById(exerciseName+'ExerciseButtonConfirmDelete').addEventListener('click', () => { /*if confirm is clicked*/
                 document.getElementById(exerciseName+'ExerciseButtonModifiedDelete').remove();
                 document.getElementById(exerciseName+'ExerciseButtonDeleteWarning').remove();
+                mAndEScreenData.muscleGroups[muscleGroupName].exercises.splice(mAndEScreenData.muscleGroups[muscleGroupName].exercises.indexOf(exerciseName), 1);
+                saveData('mAndEScreenData', mAndEScreenData);
                 delete exerciseData[muscleGroupName][exerciseName+"Data"];
+                saveData('exerciseData', exerciseData);
+                wipeExerciseList();
+                renderStartWorkoutExerciseListScreen();
             });
             document.getElementById(exerciseName+'ExerciseButtonCancelDelete').addEventListener('click', () => { /* if cancel is clicked*/
                 document.getElementById(exerciseName+'ExerciseButtonDeleteWarning').remove();
             });        
         }); 
+        // Show the exercise data screen if exercise button is pressed
+        document.getElementById(exerciseName+'ExerciseButton').addEventListener('click', () => {
+            showScreen(exerciseName+'ExerciseDataScreen');
+        });     
         // Putting exercises from "add workout components" onto the exercise list screen
         // Does this for NEW EXERCISES once, will be handled by render function if reloaded
         // Creates the container and appends to appropriate muscle container
@@ -659,16 +689,24 @@ function completeModeExercises(muscleGroupName) { /*Click complete button => bac
         // Hard-bakes the muscle group name into the CONTAINER so it can be programmatically pulled later
         exerciseListSingularExerciseContainer.dataset.muscleGroupName=muscleGroupName
         // Adds the appropriately named data array to the exercise data object
-        exerciseData[muscleGroupName][exerciseName+"Data"]=[]
-        saveData('exerciseData', exerciseData);
     }
     // Handles the return of the "add exercise" button to its add mode, removes form
-    document.getElementById(muscleGroupName+'AddExercise').removeEventListener('click',()=>completeModeExercises(muscleGroupName));
-    document.getElementById(muscleGroupName+'AddExercise').textContent='Add';
-    document.getElementById(muscleGroupName+'AddExercise'+'Form').remove();
-    document.getElementById(muscleGroupName+'AddExercise').addEventListener('click', ()=>addMode(muscleGroupName+'Screen', muscleGroupName+'AddExercise', 'Exercise Name', 
-        ()=>completeModeExercises(muscleGroupName), 
-        ()=>addMode(muscleGroupName+'Screen', muscleGroupName+'AddExercise', 'Exercise Name',)));
+    document.getElementById(muscleGroupName+'CompleteExercise').remove()
+    document.getElementById(muscleGroupName+'AddExerciseForm').remove();
+    document.getElementById(muscleGroupName+'AddCompleteButtonContainer').appendChild(createButton(muscleGroupName+'AddExercise', 'Add Exercise'));
+    document.getElementById(muscleGroupName+'AddExercise').addEventListener('click', () => addModeExercises(muscleGroupName));
 }
+
+function addModeExercises(muscleGroupName) {
+    // Delete add button
+    document.getElementById(muscleGroupName+'AddExercise').remove();
+    // Add the complete button
+    const completeButton = createButton(muscleGroupName+'CompleteExercise', 'Complete');
+    document.getElementById(muscleGroupName+'AddCompleteButtonContainer').appendChild(completeButton);
+    document.getElementById(muscleGroupName+'AddCompleteButtonContainer').insertBefore(createForm(muscleGroupName+'AddExerciseForm',muscleGroupName+'AddExerciseName','Exercise Name'), 
+        document.getElementById(muscleGroupName+'CompleteExercise'));
+    document.getElementById(muscleGroupName+'CompleteExercise').addEventListener('click', () => completeModeExercises(muscleGroupName));
+}
+
 /*Add button functions end*/
 
