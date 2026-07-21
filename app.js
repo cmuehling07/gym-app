@@ -675,20 +675,8 @@ function completeModeExercises(muscleGroupName) { /*Click complete button => bac
         document.getElementById(exerciseName+'ExerciseButton').addEventListener('click', () => {
             showScreen(exerciseName+'ExerciseDataScreen');
         });     
-        // Putting exercises from "add workout components" onto the exercise list screen
-        // Does this for NEW EXERCISES once, will be handled by render function if reloaded
-        // Creates the container and appends to appropriate muscle container
-        const exerciseListSingularExerciseContainer = document.createElement("div")
-        exerciseListSingularExerciseContainer.id=exerciseName+'ExerciseListSingularExerciseContainer';
-        document.getElementById(muscleGroupName+'ExerciseListExercisesContainer').appendChild(exerciseListSingularExerciseContainer);
-        // Create the button for the exercise in the exercise list
-        const button = createButton(exerciseName+'ExerciseListExerciseButton', exerciseName);
-        document.getElementById(exerciseName+'ExerciseListSingularExerciseContainer').appendChild(button);
-        // Hard-bakes the exercise name into the BUTTON so it can be programmatically pulled later
-        button.dataset.exercise=exerciseName;
-        // Hard-bakes the muscle group name into the CONTAINER so it can be programmatically pulled later
-        exerciseListSingularExerciseContainer.dataset.muscleGroupName=muscleGroupName
-        // Adds the appropriately named data array to the exercise data object
+        wipeExerciseList()
+        renderStartWorkoutExerciseListScreen()
     }
     // Handles the return of the "add exercise" button to its add mode, removes form
     document.getElementById(muscleGroupName+'CompleteExercise').remove()
