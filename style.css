@@ -82,7 +82,7 @@ textarea {
     justify-content: flex-start;
 }
 #startWorkoutAddExercisesButtonContainer > * {
-    min-width: 0;
+    margin: 0;
     flex-shrink: 0;
 }
 #homeButtonsContainer {
