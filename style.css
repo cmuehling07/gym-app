@@ -78,12 +78,7 @@ textarea {
 #startWorkoutAddExercisesButtonContainer, #addMuscleGroupButtonContainer, .addCompleteButtonContainer {
     display: flex;
     align-items: center;
-    flex-shrink: 0;
-    justify-content: flex-start;
-}
-#startWorkoutAddExercisesButtonContainer > * {
-    margin: 0;
-    flex-shrink: 0;
+    gap: 10px;
 }
 #homeButtonsContainer {
     display: flex;
@@ -375,7 +370,7 @@ input.muscleGroupInput, input.exerciseInput {
 }
 #startWorkoutDirections, #addMuscleGroupsDirections, .addExercisesDirections {
     font-size: 15px;
-    color:rgb(240, 240, 36);
+    color:rgb(53, 203, 70);
 }
 #startWorkoutDirectionsIcon, #addMuscleGroupsDirectionsIcon, .addExercisesDirectionsIcon {
     height: 20px;
