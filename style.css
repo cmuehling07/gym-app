@@ -375,16 +375,17 @@ input.muscleGroupInput, input.exerciseInput {
 }
 #startWorkoutDirections, #addMuscleGroupsDirections, .addExercisesDirections {
     font-size: 15px;
-    color:rgb(84, 174, 223);
+    color:rgb(240, 240, 36);
 }
 #startWorkoutDirectionsIcon, #addMuscleGroupsDirectionsIcon, .addExercisesDirectionsIcon {
     height: 20px;
     color:rgb(53, 203, 70);
-    display: inline-flex;
-    flex-shrink: 0;        /* Won't shrink */
-    width: max-content;    /* Forces span to strictly match SVG width */
-    font-size: 0;          /* Kills whitespace blowing up the container */
-    line-height: 0;
+    width: 20px;
+    max-width: 20px;
+    min-width: 20px;
+    flex: 0 0 20px;
+    display: inline-block;
+    overflow: hidden;
 }
 
 /* Input and Directions CSS, end */
