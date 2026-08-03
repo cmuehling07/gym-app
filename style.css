@@ -375,11 +375,14 @@ input.muscleGroupInput, input.exerciseInput {
 }
 #startWorkoutDirections, #addMuscleGroupsDirections, .addExercisesDirections {
     font-size: 15px;
-    color:rgb(139, 190, 156)
+    color:rgb(223, 216, 84);
 }
 #startWorkoutDirectionsIcon, #addMuscleGroupsDirectionsIcon, .addExercisesDirectionsIcon {
     height: 20px;
-    color:rgb(53, 203, 70)
+    color:rgb(53, 203, 70);
+    -webkit-text-size-adjust: 100%;
+    font-size: 0;
+    line-height: 0;
 }
 
 /* Input and Directions CSS, end */
