@@ -1079,3 +1079,6 @@ function addModeMuscles() {
 
 /*Add button functions end*/
 
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js');
+}
