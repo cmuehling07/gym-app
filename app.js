@@ -548,6 +548,8 @@ function startWorkoutDirections() { // Will add or remove directions for the sta
         document.getElementById('startWorkoutDirectionsIcon').remove()
 
     }
+    document.querySelectorAll('#startWorkoutAddExercisesButtonContainer *').forEach(el => el.style.outline = '1px solid red');
+
 }
 function addMuscleGroupsDirections() { // Will add or remove directions for the main 'add muscle groups' screen
     // Adds directions if there are no muscle groups on the 'Muscles' screen, no directions currently exist, and no form is currently displayed (which implies an active operation, and no need for directions)
@@ -1078,8 +1080,6 @@ function addModeMuscles() {
 }
 
 /*Add button functions end*/
-
-document.querySelectorAll('#startWorkoutAddExercisesButtonContainer *').forEach(el => el.style.outline = '1px solid red');
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('service-worker.js');

@@ -52,9 +52,29 @@ self.addEventListener("activate", event => {
 });
 
 // Fetch
+
 self.addEventListener("fetch", event => {
+    event.respondWith(
+        fetch(event.request)
+            .then(response => {
+                // Save a fresh copy in cache
+                return caches.open(CACHE_NAME).then(cache => {
+                    cache.put(event.request, response.clone());
+                    return response;
+                });
+            })
+            .catch(() => {
+                // If offline, use cached version
+                return caches.match(event.request);
+            })
+    );
+});
+
+
+
+/*self.addEventListener("fetch", event => {
     event.respondWith(
         caches.match(event.request)
             .then(response => response || fetch(event.request))
     );
-});
+}); */
