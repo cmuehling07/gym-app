@@ -81,6 +81,10 @@ textarea {
     flex-shrink: 0;
     justify-content: flex-start;
 }
+#startWorkoutAddExercisesButtonContainer > * {
+    min-width: 0;
+    flex-shrink: 0;
+}
 #homeButtonsContainer {
     display: flex;
     flex-direction: column;
@@ -371,7 +375,7 @@ input.muscleGroupInput, input.exerciseInput {
 }
 #startWorkoutDirections, #addMuscleGroupsDirections, .addExercisesDirections {
     font-size: 15px;
-    color:rgb(53, 203, 70)
+    color:rgb(17, 20, 18)
 }
 #startWorkoutDirectionsIcon, #addMuscleGroupsDirectionsIcon, .addExercisesDirectionsIcon {
     height: 20px;
