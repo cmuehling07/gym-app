@@ -375,7 +375,7 @@ input.muscleGroupInput, input.exerciseInput {
 }
 #startWorkoutDirections, #addMuscleGroupsDirections, .addExercisesDirections {
     font-size: 15px;
-    color:rgb(17, 20, 18)
+    color:rgb(139, 190, 156)
 }
 #startWorkoutDirectionsIcon, #addMuscleGroupsDirectionsIcon, .addExercisesDirectionsIcon {
     height: 20px;
