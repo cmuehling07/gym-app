@@ -9,32 +9,41 @@
 <body>
     
     <div id="home" class="screen active">
-        <h1>Gym App</h1>
-        <button id="navMusclesButton">Workout Components</button>
-        <button id="startWorkoutButton">Start Workout</button>
+        <div class="header">
+            <h1>Gym Organizer</h1> 
+        </div>
+        <div id="homeButtonsContainer">
+            <button id="navMusclesButton">Muscle Groups</button>
+            <button id="startWorkoutButton">Start Workout</button>
+        </div>
     </div>
     <div id="Muscles" class="screen">
+        <div class="header">
+            <h1>Muscle Groups</h1> 
+        </div>
         <div id="muscleNameButtons"></div>
-        <button id="addMuscleGroup">Add</button>
+        <div id="addMuscleGroupButtonContainer"></div>
         <div id="navButtonMuscles" class="navButtons">
         </div>
     </div>
     <div id="startWorkoutScreen" class="screen">
-        <h1>Build Workout</h1>
+        <div class="header">
+            <h1>Build Workout</h1> 
+        </div>
         <div id="startWorkoutExercisesContainer">
         </div>
         <div id="startWorkoutAddExercisesButtonContainer">
-        <button id="startWorkoutAddExercisesButton">Add Exercises</button>
         </div>
-        <button id="startWorkoutCompleteButton">Complete Workout</button>
         <div id="navButtonsStartWorkout" class="navButtons">
         </div>
     </div>
     <div id="exerciseListScreen" class="screen">
-        <h1>Choose an Exercise</h1>
-    <div id="exerciseListButtonsContainer">
+        <div class="header">
+            <h1>Choose an Exercise</h1> 
+        </div>
+        <div id="exerciseListButtonsContainer">
         </div> 
-    <div id="navButtonsExerciseList" class="navButtons">
+        <div id="navButtonsExerciseList" class="navButtons">
         </div>
     </div>
 

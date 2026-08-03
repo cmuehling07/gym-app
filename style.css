@@ -1,84 +1,388 @@
+/* General CSS, start */
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+    background: rgb(250,250,250);
 }
-
 .screen {
     display: none;
     padding: 20px;
 }
-
-.active {
-        display: block;
-        opacity: 1;
+.header {
+    background: linear-gradient(90deg, #ffbb1d, #f3a70f);
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 10px;
 }
+.header h1 {
+    font-size: fit-content;
+    margin: 0;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+}
+h3 {
+    margin: 8px 0;
+}
+button {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+textarea {
+    width: 100%;
+    max-width: 300px;
+    height: 100px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+::placeholder {
+    color: rgb(201, 201, 201)
+}
+
+/* General CSS, end */
+
+/* Container CSS, start */
 
 #muscleNameButtons {
     display: flex;
     flex-direction: column;
+    border: none;
 }
-
 .buttonModifiers {
     display: flex;
     flex-direction: row;
     gap: 10px;
 }
-
 .navButtons {
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+.startWorkoutSingularExerciseContainer {
+    margin-bottom: 5px;
+}
+.addSetButtonContainer {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    margin-left: 5px;
+}
+#startWorkoutAddExercisesButtonContainer, #addMuscleGroupButtonContainer, .addCompleteButtonContainer {
+    display: flex;
+    align-items: center;
     gap: 10px;
+}
+#homeButtonsContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+.warningTextContainer {
+    background: rgb(240, 240, 0);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+.warningTextContainer p {
+    margin: 0 0 10px 0;
+}
+.notesContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
 } 
+
+/* Container CSS, end */
+
+/* Button CSS, start */
+
+.muscleButton, .exerciseButton, .navButton, .navButtonED, .saveWorkoutButton, .saveNotesButton {
+    display: inline-flex;
+    align-items: center;
+    height: 30px;
+    width: fit-content;
+    margin: 5px 0;
+    padding: 0;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    overflow: hidden;
+}
+.deleteButton, .statsButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    width: 30px;
+    margin: 5px 0;
+    padding: 5px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    overflow: hidden;
+}
+.RandWDeleteButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 20px;
+    width: 20px;
+    padding: 1px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    overflow: hidden;
+}
+.addButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 35px;
+    width: 35px;
+    margin: 5px 0;
+    padding: 5px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    overflow: hidden;
+    background: rgb(66, 254, 88);
+}
+.completeButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 35px;
+    width: 50px;
+    margin: 10px 0 5px 0;
+    padding: 5px;
+    border: none;
+    border-radius: 17.5px;
+    cursor: pointer;
+    overflow: hidden;
+    background: rgb(66, 254, 88);
+}
+.addSetButton {
+    background: rgb(53, 203, 70);
+    outline: 5px solid rgb(66, 254, 88);
+    height: 20px;
+    width: fit-content;
+    border: none;
+    border-radius: 10px;
+    color: white
+}
+#navMusclesButton, #startWorkoutButton {
+    background: rgb(59, 167, 239);
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+    padding: 10px 20px;
+    color: rgb(255, 255, 255);
+    font: 14px Lucida Sans;
+    font-weight: bold;
+
+}
+.notesButton {
+    background: rgb(240, 240, 0);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    width: 30px;
+    margin: 5px 0;
+    padding: 5px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+}
+.muscleButtonIcon, .exerciseButtonIcon, .navButtonIcon, .saveWorkoutButtonIcon, .saveNotesButtonIcon {
+    width: 24px;
+    height: 100%;
+    padding: 0 5px;
+    align-items: center;
+    border: none;
+    border-radius: 15px;
+    color: white;
+    background: rgba(0, 0, 0, 0.2);
+}
+.saveWorkoutButtonIcon, .saveNotesButtonIcon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-right: 6px;
+}
+.deleteButtonIcon, .statsButtonIcon, .RandWDeleteButtonIcon, .notesButtonIcon {
+    width: 100%;
+    height: 100%;
+    color: white
+}
+.repsAndWeightInputDelete {
+    background: rgb(240, 0, 0);
+    width: 10px;
+    height: 10px;
+    border: none;
+    border-radius: 5px;
+}
+.addButtonIcon {
+    width: 100%;
+    height: 100%;
+    border: none;
+    cursor: pointer;
+    border-radius: 50%;
+    color: white;
+    background: rgba(0, 0, 0,0.2);
+}
+.notesButtonDot {
+    display: none;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 8px;
+    height: 8px;
+    background: red;
+    border-radius: 50%;
+}
+.muscleButtonText, .exerciseButtonText, .navButtonText, .saveWorkoutButtonText, .saveNotesButtonText {
+    align-items: center;
+    padding: 0 15px 0 10px;;
+    font: 14px Lucida Sans;
+    color: white;
+}
+.completeButtonText {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border: none;
+    cursor: pointer;
+    border-radius: 17.5px;
+    color: white;
+    background: rgba(0, 0, 0,0.2);
+}
+
+/* Button colors, start*/
+.muscleButton {
+    background: rgb(236, 64, 64);
+}
+.exerciseButton {
+    background: rgb(20, 139, 243);
+}
+.navButton {
+    background: rgb(194, 194, 194);
+}
+.statsButton {
+    background: rgb(240, 240, 0)
+}
+.saveWorkoutButton, .saveNotesButton {
+    background: rgb(238, 22, 220) 
+}
+.deleteButton, .RandWDeleteButton {
+    background: rgb(240, 0, 0);
+}
+/* Button colors, end */
+
+svg {
+    width: 100%;
+    height: 100%;
+}
+svg.saveWorkoutButtonSVG, svg.saveNotesButtonSVG {
+    width: 90%;
+    height: 90%
+}
+
+/* Button CSS, end */
+
+/* Grid table CSS, start */
 
 .grid-table {
     display: grid;
     border: 1px solid #333;
+    border-bottom: none;
     border-collapse: collapse;
+    max-height: 240px;
+    overflow-y: auto;
+    overflow-x: auto; 
 }
-
 .grid-row {
     display: grid;
-    grid-template-columns: repeat(var(--cols), 1fr) auto; /* auto = delete button column */
-    border-bottom: 1px solid #333;
+    grid-template-columns: repeat(var(--cols), minmax(70px, 1fr)) 50px;
     align-items: center;
     text-align: center;
 }
-
 .grid-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: 8px;
     border-right: 1px solid #333;
+    border-bottom: 1px solid #333;
+    height: 40px;
 }
-  
-  
+.grid-cell-header {
+    padding: 8px;
+    border-right: 1px solid #333;
+    border-bottom: 1px solid #333;
+}
 .grid-row:last-child {
     border-bottom: none;
     border-right: none;
 }
-
-.delete-btn {
-    padding: 5px 10px;
-    background: crimson;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-  
-.delete-btn:hover {
-    background: darkred;
-}
-
 .form-row-RW {
-    display: flex;          /* Put items in a row */
-    align-items: center;    /* Vertically align inputs with labels */
+    display: flex;         
+    align-items: center;
+    margin: 5px 0px;    
 }
-
 .form-row-RW label {
     margin-right: 8px;       /* Small space between label and input */
     white-space: nowrap;     /* Prevent label from breaking into two lines */
 }
-
 .form-row-RW input {
     margin-right: 20px;       /* Small space between input and next element */
-    width: 20px;
+    width: 30px;
 }
+
+/* Grid table CSS, end */
+
+
+/* Input and Directions CSS, start */
+
+input.muscleGroupInput, input.exerciseInput {
+    border: 3px solid rgb(53, 203, 70);
+    border-radius: 5px;
+    outline: 3px solid rgb(66, 254, 88);
+    margin-top: 8px;
+}
+#startWorkoutDirections, #addMuscleGroupsDirections, .addExercisesDirections {
+    font-size: 15px;
+    color:rgb(53, 203, 70)
+}
+#startWorkoutDirectionsIcon, #addMuscleGroupsDirectionsIcon, .addExercisesDirectionsIcon {
+    height: 20px;
+    color:rgb(53, 203, 70)
+}
+
+/* Input and Directions CSS, end */
+
+/* Placed controls for .active at end in order to override any prior "display: none" styles */
+
+.active {
+    display: block;
+    opacity: 1;
+}
+
