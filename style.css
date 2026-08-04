@@ -44,11 +44,28 @@ textarea {
 ::placeholder {
     color: rgb(201, 201, 201)
 }
+#liftLogLogoHome {
+    width: 80vw;
+    max-width: 500px;
+    height: auto;
+}
 
 /* General CSS, end */
 
 /* Container CSS, start */
 
+#homeLogoContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 17vh;
+}
+#home {
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
+    padding: 0;
+}
 #muscleNameButtons {
     display: flex;
     flex-direction: column;
@@ -392,3 +409,6 @@ input.muscleGroupInput, input.exerciseInput {
     opacity: 1;
 }
 
+#home.active {
+    display: flex
+}
