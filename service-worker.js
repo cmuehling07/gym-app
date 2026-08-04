@@ -7,10 +7,10 @@ const FILES_TO_CACHE = [
     "./app.js",
     "./manifest.json",
 
-    "./assets/icons/LiftLogIcon-128x128.png",
-    "./assets/icons/LiftLogIcon-180x180.png",
-    "./assets/icons/LiftLogIcon-192x192.png",
-    "./assets/icons/LiftLogIcon-512x512.png",
+    "./assets/icons/LiftLogLogo-128x128.png",
+    "./assets/icons/LiftLogLogo-180x180.png",
+    "./assets/icons/LiftLogLogo-192x192.png",
+    "./assets/icons/LiftLogLogo-512x512.png",
 
     "./assets/icons/accessibility-outline.svg",
     "./assets/icons/add-outline.svg",
