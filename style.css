@@ -60,6 +60,10 @@ textarea {
     align-items: center;
     margin-top: 17vh;
 }
+.exerciseDataSaveButtonContainer {
+    display: inline-block;
+    position: relative;
+}
 #home {
     justify-content: center;
     width: 100%;
@@ -377,7 +381,7 @@ svg.saveWorkoutButtonSVG, svg.saveNotesButtonSVG {
 /* Grid table CSS, end */
 
 
-/* Input and Directions CSS, start */
+/* Misc CSS, start */
 
 input.muscleGroupInput, input.exerciseInput {
     border: 3px solid rgb(53, 203, 70);
@@ -399,8 +403,21 @@ input.muscleGroupInput, input.exerciseInput {
     display: inline-block;
     overflow: hidden;
 }
+.exerciseDataAcknowledgementText {
+    position: absolute;
+    left: calc(100% + 10px);
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgb(102, 200, 27);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+.exerciseDataAcknowledgementText.active {
+    opacity: 1;
+}
 
-/* Input and Directions CSS, end */
+/* Misc CSS, end */
 
 /* Placed controls for .active at end in order to override any prior "display: none" styles */
 

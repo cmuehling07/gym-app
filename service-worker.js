@@ -1,4 +1,8 @@
-const CACHE_NAME = "gym-app-v1.00.01";
+const CACHE_NAME = "gym-app-v1.00.02";
+
+// Patch notes
+// Changed RandW input type to "text", to allow letters, such as "e" to represent "each"
+// Created an acknowledgement text, "Saved...", that goes on the exericse data screen; triggers on click of save button
 
 const FILES_TO_CACHE = [
     "./",

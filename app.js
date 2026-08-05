@@ -356,9 +356,22 @@ function renderExerciseDataScreen(exerciseName, muscleGroupName) {
     textArea.placeholder = 'Enter your notes here...';
     textArea.value = exerciseData[muscleGroupName][exerciseName+"Data"][exerciseName+'Notes'];
     notesContainer.appendChild(textArea);
+    // Create the container for the save button and its acknowledgement text
+    const saveButtonContainer = document.createElement('div');
+    saveButtonContainer.id = exerciseName + 'ExerciseDataNotesSaveButtonContainer';
+    saveButtonContainer.classList.add('exerciseDataSaveButtonContainer');
+    notesContainer.appendChild(saveButtonContainer);
     // Create the save button
     const saveButton = createSaveNotesButton(exerciseName + 'ExerciseDataNotesSaveButton');
-    notesContainer.appendChild(saveButton);
+    saveButtonContainer.appendChild(saveButton);
+    // Create the acknowledgement text
+    const acknowledgementText = document.createElement('span');
+    acknowledgementText.id = exerciseName + 'ExerciseDataNotesAcknowledgementText';
+    acknowledgementText.classList.add('exerciseDataAcknowledgementText');
+    acknowledgementText.textContent = 'Saved...';
+    saveButtonContainer.appendChild(acknowledgementText);
+    // Create a variable that will store the timeout applied to the acknowledgement text
+    let savedTimer;
     // When the save button is clicked, pull the value from the text area, and overwrite the notes section of the exercise in exerciseData
     saveButton.onclick = function() {
         const notes = textArea.value;
@@ -366,6 +379,14 @@ function renderExerciseDataScreen(exerciseName, muscleGroupName) {
         // Update the notes button on the 'start workout' screen, if it exists, so that the red dot appears/disappears to reflect the existence/absence of text in the text area
         manageDot(exerciseName, muscleGroupName);
         saveData('exerciseData', exerciseData);
+        // Clear any existing timeout on the acknowledgement text; meaning the 1.5 seconds is always from the most recent click, and .active doesn't get removed from previous clicks that are expiring
+        clearTimeout(savedTimer);
+        // Initially make the button visible by adding active; visibility controlled in CSS
+        acknowledgementText.classList.add('active');
+        // Set a timeout to remove the active class after 1.5 seconds; also saving the timeout in the savedTimer variable
+        savedTimer = setTimeout(() => {
+            acknowledgementText.classList.remove('active');
+        }, 1500);
     };
     // Creates a nav button container
     const navButtonContainer = document.createElement('div');
@@ -500,9 +521,9 @@ function createRepsAndWeightInput() { // Creates the reps and weight input field
     lineContainer.classList.add('form-row-RW');
     lineContainer.innerHTML=
         `<label for="Reps" >Reps:</label>
-         <input type="number" name="Reps">
+         <input type="text" name="Reps">
          <label for="Weight" >Weight:</label>
-         <input type="number" name="Weight">`;
+         <input type="text" name="Weight">`;
     // Creating the 'X' button that eliminates a set
     // The button will be added to the container and will remove the container (which is the 'set' of reps and weight) when clicked
     const button = document.createElement('button');
